@@ -1,4 +1,5 @@
 import logging
+import sys
 from typing import Optional
 
 class MyBigNumber:
@@ -13,8 +14,15 @@ class MyBigNumber:
     Assumptions: inputs contain only characters '0'..'9' and are non-empty.
     """
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    def __init__(self, logger: Optional[logging.Logger] = None, enable_console_log: bool = False):
         self.logger = logger or logging.getLogger(__name__)
+        if logger is None and enable_console_log:
+            self.logger.setLevel(logging.INFO)
+            self.logger.handlers.clear()
+            handler = logging.StreamHandler(sys.stdout)
+            handler.setFormatter(logging.Formatter("%(message)s"))
+            self.logger.addHandler(handler)
+            self.logger.propagate = False
 
     def sum(self, stn1: str, stn2: str) -> str:
         """Return string representation of stn1 + stn2 using manual digit add.
@@ -62,6 +70,5 @@ class MyBigNumber:
         return result
     
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format='%(message)s')
-    nb = MyBigNumber()
+    nb = MyBigNumber(enable_console_log=True)
     print(nb.sum('1234', '897'))
