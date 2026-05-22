@@ -4,6 +4,7 @@ import unittest
 
 from src.add2num import MyBigNumber
 
+
 class TestMyBigNumber(unittest.TestCase):
     def setUp(self):
         self.log_stream = io.StringIO()
@@ -17,12 +18,29 @@ class TestMyBigNumber(unittest.TestCase):
         self.logger.addHandler(handler)
 
         self.add2num = MyBigNumber(logger=self.logger)
-    
+
     def tearDown(self):
         self.logger.handlers.clear()
 
     def test_sum_simple(self):
         self.assertEqual(self.add2num.sum("1234", "897"), "2131")
+
+    def test_sum_long_first_short_second(self):
+        self.assertEqual(self.add2num.sum("4567", "123"), "4690")
+
+
+    def test_sum_carry_at_most_significant_digit(self):
+        self.assertEqual(self.add2num.sum("500", "500"), "1000")
+
+    def test_sum_with_one_zero(self):
+        self.assertEqual(self.add2num.sum("0", "987654321"), "987654321")
+        self.assertEqual(self.add2num.sum("987654321", "0"), "987654321")
+
+    def test_sum_extremely_large_numbers(self):
+        num1 = "9" * 50  # 50 số 9
+        num2 = "1"
+        expected = "1" + "0" * 50
+        self.assertEqual(self.add2num.sum(num1, num2), expected)
 
     def test_sum_with_carry_chain(self):
         self.assertEqual(self.add2num.sum("999", "1"), "1000")
